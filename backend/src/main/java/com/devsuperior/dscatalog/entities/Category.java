@@ -1,12 +1,9 @@
 package com.devsuperior.dscatalog.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.GenerationType;
+import javax.persistence.*;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 @Entity
 @Table(name = "tb_category")
@@ -16,6 +13,12 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant createdAt; // with this definition timestamp: UTC.
+
+    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+    private Instant updatedAt;
 
     public Category() {
     }
@@ -39,6 +42,26 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    // first time using save? prePersist will register the Instant at createdAt;
+    @PrePersist
+    public void prePersist(){
+        createdAt = Instant.now();
+    }
+
+    // preUpdate will update the Instant at updatedAt;
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt = Instant.now();
     }
 
     @Override
