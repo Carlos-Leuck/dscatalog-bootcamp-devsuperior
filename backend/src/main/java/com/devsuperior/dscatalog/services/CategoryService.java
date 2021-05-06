@@ -36,4 +36,15 @@ public class CategoryService {
         // converts Category to CategoryDTO (using constructor)
         return new CategoryDTO(entity);
     }
+
+    @Transactional
+    public CategoryDTO insert(CategoryDTO dto) {
+        // convert dto to entity (Category). Remember: ID is auto incremented.
+        Category entity = new Category();
+        entity.setName(dto.getName());
+        entity = repository.save(entity);
+        // convert entity to dto
+        return new CategoryDTO(entity);
+
+    }
 }
