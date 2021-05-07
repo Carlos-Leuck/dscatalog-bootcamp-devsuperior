@@ -28,7 +28,7 @@ public class CategoryResource {
             @RequestParam(value = "orderBy", defaultValue = "name") String orderBy
 
     ) {
-        // req http uses only String. So need to "convert" using value of.
+        //direction uses Enum and req http uses String. So need to convert the String to Enum using value of.
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
 
         Page<CategoryDTO> list = service.findAllPaged(pageRequest);
