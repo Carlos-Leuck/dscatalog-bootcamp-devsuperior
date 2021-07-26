@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,9 @@ public class CategoryService {
 
     // only to show how to do a transaction. readOnly = true; Use to avoid "lock" the db. Increases the perfomance.
     @Transactional(readOnly = true)
-    public Page<CategoryDTO> findAllPaged(PageRequest pageRequest) {
+    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
         // remember: repository works with entity Category.
-        Page<Category> list = repository.findAll(pageRequest);
+        Page<Category> list = repository.findAll(pageable);
         //so we need to use this lambda to convert Category to CategoryDTO.
         // Page is already a Stream so we dont need to use .stream() and .collect(Collectors.toList())
         return list.map(CategoryDTO::new);
