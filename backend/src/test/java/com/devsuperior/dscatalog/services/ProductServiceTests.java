@@ -1,5 +1,7 @@
 package com.devsuperior.dscatalog.services;
 
+import com.devsuperior.dscatalog.entities.Product;
+import com.devsuperior.dscatalog.factory.Factory;
 import com.devsuperior.dscatalog.repositories.ProductRepository;
 import com.devsuperior.dscatalog.services.exceptions.DatabaseException;
 import com.devsuperior.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -7,12 +9,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 public class ProductServiceTests {
@@ -22,22 +30,37 @@ public class ProductServiceTests {
 
     @Mock
     private ProductRepository repository;
-    //need to configure the mock object before testing
+//    need to configure the mock object before testing
 
     private long existingId;
     private long nonExistingId;
     private long dependentId;
+    private PageImpl<Product> page;
+    private Product product;
 
     @BeforeEach
     void setUp() throws Exception {
+//      it doesn't matter the values, they need to be differents
         existingId = 1L;
-        nonExistingId = 1000L;
-        dependentId=4L;
+        nonExistingId = 2L;
+        dependentId = 3L;
+        product = Factory.createProduct();
+//      PageImpl: represents a concrete type for a page
+        page = new PageImpl<>(List.of(product));
 
+//      simulation of methods with non void return. When comes first.
+        Mockito.when(repository.findAll((Pageable) ArgumentMatchers.any())).thenReturn(page);
+
+        Mockito.when(repository.save(ArgumentMatchers.any())).thenReturn(product);
+
+        Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product));
+        Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+
+//      simulation of methods with void return.
         Mockito.doNothing().when(repository).deleteById(existingId);
         Mockito.doThrow(EmptyResultDataAccessException.class).when(repository).deleteById(nonExistingId);
         Mockito.doThrow(DataIntegrityViolationException.class).when(repository).deleteById(dependentId);
-        //configuration for mock objects.
+//       configuration for mock objects.
 
     }
 
