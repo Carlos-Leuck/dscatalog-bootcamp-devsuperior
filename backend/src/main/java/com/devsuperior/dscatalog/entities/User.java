@@ -14,10 +14,14 @@ public class User implements Serializable {
     private Long id;
     private String firstName;
     private String lastName;
+
+    @Column(unique = true)
     private String email;
+//    email need to be unique
     private String password;
 
-    @ManyToMany
+//    fetch = need this for Spring Security. User must carry his roles.
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "tb_user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
