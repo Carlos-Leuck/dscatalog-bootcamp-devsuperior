@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tb_category")
@@ -20,6 +22,11 @@ public class Category implements Serializable {
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
 
+    // Category - Products is a bidirectional relationship.
+    @ManyToMany(mappedBy = "categories")
+    private Set<Product> products = new HashSet<>();
+
+
     public Category() {
     }
 
@@ -30,6 +37,10 @@ public class Category implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public Set<Product> getProducts() {
+        return products;
     }
 
     public void setId(Long id) {
@@ -52,17 +63,20 @@ public class Category implements Serializable {
         return updatedAt;
     }
 
-    // first time using save? prePersist will register the Instant at createdAt;
     @PrePersist
     public void prePersist(){
+        // first time using save? prePersist will register the Instant at createdAt;
         createdAt = Instant.now();
     }
 
-    // preUpdate will update the Instant at updatedAt;
+
+
     @PreUpdate
     public void preUpdate(){
+        // preUpdate will update the Instant at updatedAt;
         updatedAt = Instant.now();
     }
+
 
     @Override
     public boolean equals(Object o) {
